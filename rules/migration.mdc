@@ -1,0 +1,71 @@
+---
+description: Orchestrate the full React 19, Next 16, Node 24 migration. Triggers when user says migrate, migration, upgrade React, upgrade Next, React 19, Next 16, Node 24, upgrade stack, nextupgrade, or upgrade dependencies.
+alwaysApply: false
+---
+
+# Tiket Stack Migration Orchestrator
+
+When the user asks to migrate or upgrade to React 19 / Next 16 / Node 24, execute **all applicable migration skills** in the order below. For each phase:
+
+1. Read the SKILL.md file
+2. Check if it applies to this project (e.g., skip Zustand if not used, skip React Query if not used)
+3. Execute every step in the skill's checklist
+4. Move to the next phase
+
+## Execution Order
+
+### Phase 1: Dependencies
+
+Read and apply `.cursor/skills/migrate-core-deps/SKILL.md`
+- Upgrades React, Next, Node, types, removes deprecated packages
+
+Read and apply `.cursor/skills/migrate-tiket-packages/SKILL.md`
+- Switches all @tiket/* packages to React 19-compatible alpha versions
+- Updates import paths (e.g., @tiket/next/logger)
+
+### Phase 2: Configuration
+
+Read and apply `.cursor/skills/migrate-next-config/SKILL.md`
+- Converts next.config.js to next.config.ts
+- Applies all Next 16 config changes (remotePatterns, rewrites, --webpack flag)
+
+Read and apply `.cursor/skills/migrate-typescript-jsx/SKILL.md`
+- Updates tsconfig (jsx: react-jsx), creates react-jsx.d.ts, updates next-env.d.ts
+
+### Phase 3: Data and State Libraries
+
+Read and apply `.cursor/skills/migrate-react-query-v5/SKILL.md`
+- **Skip if project does not use react-query.** Migrates to @tanstack/react-query v5
+- Also read `transforms.md` in the same directory for detailed code transforms
+
+Read and apply `.cursor/skills/migrate-zustand-v5/SKILL.md`
+- **Skip if project does not use zustand.** Migrates stores to createWithEqualityFn + shallow
+
+### Phase 4: Linting and Formatting
+
+Read and apply `.cursor/skills/migrate-eslint-flat-config/SKILL.md`
+- Replaces old ESLint/oxlint config with ESLint 10 flat config + Prettier
+- Also read `eslint-config-template.md` in the same directory for the full config template
+
+### Phase 5: Testing
+
+Read and apply `.cursor/skills/migrate-jest-testing/SKILL.md`
+- Upgrades Jest, jsdom, Testing Library for React 19
+- Also read `patches-and-mocks.md` in the same directory for patch and mock file contents
+
+### Phase 6: Code Fixes
+
+Read and apply `.cursor/skills/migrate-react19-code-fixes/SKILL.md`
+- Fixes RefObject types, useRef, child.props, hydration, lazy loading, and other React 19 issues
+
+### Phase 7: Infrastructure
+
+Read and apply `.cursor/skills/migrate-ci-docker/SKILL.md`
+- Updates all Dockerfiles, GitHub Actions workflows, Jenkinsfiles, and Sonar config for Node 24
+
+## Rules
+
+- Always run `pnpm install` after Phase 1 completes before continuing
+- After each phase, verify the project builds (`pnpm run build`) or type-checks (`pnpm run type-check`) before moving on
+- If a phase fails, fix the issues before proceeding to the next phase
+- Report which phases were applied and which were skipped at the end
