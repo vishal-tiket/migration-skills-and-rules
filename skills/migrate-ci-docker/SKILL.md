@@ -28,7 +28,9 @@ If the project has `.nvmrc`, update it as well:
 
 ## Step 2: Update Dockerfiles
 
-### Main Dockerfile
+Update only Dockerfiles that exist in the project. Skip any that are not present.
+
+### Main Dockerfile (if exists)
 
 ```dockerfile
 # Before
@@ -38,7 +40,7 @@ FROM asia-southeast1-docker.pkg.dev/tk-dev-micro/base-image/node:20.10.0-alpine 
 FROM asia-southeast1-docker.pkg.dev/tk-dev-micro/base-image/node:24.14.1-alpine AS base
 ```
 
-### Sonar Dockerfile (docker/Sonar.Dockerfile)
+### Sonar Dockerfile (if `docker/Sonar.Dockerfile` exists)
 
 ```dockerfile
 # Before
@@ -50,7 +52,7 @@ FROM node:24-alpine
 FROM asia-southeast1-docker.pkg.dev/tk-dev-micro/base-image/node:24.14.1-alpine
 ```
 
-### Test Dockerfile (docker/Test.Dockerfile)
+### Test Dockerfile (if `docker/Test.Dockerfile` exists)
 
 ```dockerfile
 # Before
@@ -94,7 +96,9 @@ Pin pnpm version:
 
 ## Step 4: Workflow-specific changes
 
-### pull_request_actions.yml
+Apply these only to workflow files that exist in the project. Skip any that are not present.
+
+### pull_request_actions.yml (if exists)
 
 Add explicit `setup-node` step if missing (some older workflows relied on system Node):
 
@@ -106,7 +110,7 @@ Add explicit `setup-node` step if missing (some older workflows relied on system
     cache: 'pnpm'
 ```
 
-### nextjs_bundle_analysis.yml
+### nextjs_bundle_analysis.yml (if exists)
 
 Update build command:
 
@@ -118,7 +122,7 @@ run: ./node_modules/.bin/next build
 run: pnpm run build
 ```
 
-### release.yml
+### release.yml (if exists)
 
 Update preparation step:
 
@@ -130,7 +134,7 @@ run: npm pkg set scripts.prepare="echo '[Skip] Husky and MSW Init'"
 run: pnpm pkg set scripts.prepare "echo '[Skip] Husky and MSW Init'"
 ```
 
-### staging_build_autotag.yml
+### staging_build_autotag.yml (if exists)
 
 Update matrix node version:
 
@@ -141,7 +145,7 @@ strategy:
       - 24  # was 18 or 20
 ```
 
-### chromatic.yml
+### chromatic.yml (if exists)
 
 Pin pnpm version:
 
@@ -172,7 +176,9 @@ sh 'corepack prepare pnpm@latest'
 sh 'corepack prepare pnpm@10'  // or pnpm@9 depending on project
 ```
 
-## Step 6: Update Sonar config
+## Step 6: Update Sonar config (if file exists)
+
+If `sonar-project.properties` exists, update it. Otherwise skip this step.
 
 In `sonar-project.properties`:
 
@@ -188,9 +194,9 @@ sonar.eslint.eslintconfigpath=eslint.config.cjs
 
 - [ ] Volta node pinned to 24.14.1 in package.json
 - [ ] `.nvmrc` updated to 24.14.1 (if present)
-- [ ] Main Dockerfile uses node:24.14.1-alpine
-- [ ] Sonar Dockerfile uses node:24-alpine
-- [ ] Test Dockerfile uses node:24-alpine (if present)
+- [ ] Main Dockerfile uses node:24.14.1-alpine (if exists)
+- [ ] Sonar Dockerfile uses node:24-alpine (if exists)
+- [ ] Test Dockerfile uses node:24-alpine (if exists)
 - [ ] All GitHub Actions bumped to latest versions
 - [ ] Node version set to 24.14.1 in all workflows
 - [ ] pnpm version pinned in all workflows
@@ -198,4 +204,4 @@ sonar.eslint.eslintconfigpath=eslint.config.cjs
 - [ ] Release uses `pnpm pkg set` instead of `npm pkg set`
 - [ ] Staging autotag matrix updated to Node 24
 - [ ] Jenkinsfile.dev updated (if present)
-- [ ] `sonar-project.properties` points to `eslint.config.cjs`
+- [ ] `sonar-project.properties` points to `eslint.config.cjs` (if file exists)

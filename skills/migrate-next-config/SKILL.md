@@ -13,6 +13,8 @@ Convert `next.config.js` to `next.config.ts` and apply all Next 16 required chan
 
 ## Step 1: Rename config file
 
+If `next.config.js` exists, rename to `next.config.ts`. If the project already has `next.config.ts` or `next.config.mjs`, skip the rename and adapt the existing file in the following steps instead.
+
 ```bash
 mv next.config.js next.config.ts
 ```
@@ -93,9 +95,9 @@ experimental: {
 },
 ```
 
-## Step 6: Add API rewrite for module federation prefix
+## Step 6: Add API rewrite for module federation prefix (if applicable)
 
-If the app uses module federation or is served under a path prefix, add:
+Only add this rewrite if the app uses module federation or is served under a path prefix. Check for `ModuleFederationPlugin`, `@module-federation`, or path-prefix routing in the existing config before adding:
 
 ```typescript
 async rewrites() {
@@ -145,7 +147,7 @@ The `lint:js` script changes from `next lint` (or `oxlint`) to `eslint .` for th
 
 ## Step 10: Update tsconfig include
 
-Add `next.config.ts` to `tsconfig.json` `include` if not already covered by `**/*.ts`:
+Only add `next.config.ts` to `tsconfig.json` `include` if the file was renamed in Step 1 and is not already covered by `**/*.ts`:
 
 ```jsonc
 "include": [
@@ -159,13 +161,13 @@ Add `next.config.ts` to `tsconfig.json` `include` if not already covered by `**/
 
 ## Checklist
 
-- [ ] `next.config.js` renamed to `next.config.ts`
+- [ ] `next.config.js` renamed to `next.config.ts` (or existing .ts/.mjs adapted)
 - [ ] `require()` converted to ESM imports with types
 - [ ] Config function signature updated (no `defaultConfig`)
 - [ ] `images.domains` replaced with `images.remotePatterns`
 - [ ] `experimental.instrumentationHook` removed
 - [ ] `experimental.cssChunking: 'strict'` added
-- [ ] API rewrite added for module federation prefix (if applicable)
+- [ ] API rewrite added for module federation prefix (if project uses module federation)
 - [ ] `allowedDevOrigins` added (if using custom local domains)
 - [ ] Rewrite syntax updated (`:path*` to `:path(.*)`)
 - [ ] `--webpack` flag added to build/dev/start scripts

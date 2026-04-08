@@ -18,7 +18,7 @@ Replace `react-query` with `@tanstack/react-query` v5 and update all query/mutat
 
 // Add to dependencies
 "@tanstack/react-query": "^5.90.20",
-"@tanstack/react-query-devtools": "^5.91.2"
+"@tanstack/react-query-devtools": "^5.91.2"  // only if react-query/devtools was previously used
 ```
 
 ## Step 2: Update provider
@@ -89,9 +89,9 @@ Key changes:
 - Update `dehydratedState` defaults from `{}` to `undefined`
 - For async APIs, change `mockReturnValue` to `mockResolvedValue`
 
-## Step 7: Update test utilities
+## Step 7: Update test utilities (if file exists)
 
-In `lib/test-utils.tsx`:
+Only if `lib/test-utils.tsx` (or equivalent test utils file) exists. In `lib/test-utils.tsx`:
 
 ```typescript
 // Before

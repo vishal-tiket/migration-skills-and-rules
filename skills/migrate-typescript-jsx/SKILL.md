@@ -39,7 +39,9 @@ Add Next 16 dev types and the JSX compatibility file:
 }
 ```
 
-## Step 3: Create react-jsx.d.ts
+## Step 3: Create react-jsx.d.ts (REQUIRED)
+
+This is a new required file -- without it, existing code using `JSX.Element` and `JSX.IntrinsicElements` will fail to compile after React 19. This is NOT optional.
 
 Create this file at the repository root:
 
@@ -77,9 +79,9 @@ declare global {
 }
 ```
 
-## Step 4: Update next-env.d.ts
+## Step 4: Update next-env.d.ts (if file exists)
 
-Add the route types import and update the docs URL:
+Update `next-env.d.ts` only if the file exists. Next.js will regenerate it on the next build if missing. Add the route types import and update the docs URL:
 
 ```typescript
 /// <reference types="next" />

@@ -1,5 +1,7 @@
 # Patches and Mocks
 
+> **Conditional**: Create these files only when instructed by the parent SKILL.md. The jsdom patch is only needed if the project uses jsdom (see SKILL.md Step 3). The moo-color mock is only needed if `jest-canvas-mock` is in devDependencies (see SKILL.md Step 4).
+
 ## jsdom@26.1.0 patch
 
 Create the file `patches/jsdom@26.1.0.patch` with this content:

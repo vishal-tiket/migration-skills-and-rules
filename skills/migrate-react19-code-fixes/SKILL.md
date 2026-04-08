@@ -97,9 +97,9 @@ Next 16's `Image` component has stricter `src` typing:
 <Image src={typeof src === 'string' ? src : ''} alt={alt} fill />
 ```
 
-## 6. @loadable/component to React.lazy + Suspense
+## 6. @loadable/component to React.lazy + Suspense (if applicable)
 
-Replace `@loadable/component` with React's built-in lazy loading:
+Only apply if `@loadable/component` is in the project's dependencies. Check `package.json` first. Replace `@loadable/component` with React's built-in lazy loading:
 
 ```typescript
 // Before
@@ -206,9 +206,9 @@ bgColor="C100"
 
 Remove these once the design system publishes updated types.
 
-## 12. NodeJS.Timer type
+## 12. NodeJS.Timer type (if applicable)
 
-If using `@types/node` v24, `NodeJS.Timer` no longer exists:
+Only apply if the codebase uses `NodeJS.Timer`. Search the codebase first. If using `@types/node` v24, `NodeJS.Timer` no longer exists:
 
 ```typescript
 // Before
@@ -225,11 +225,11 @@ let interval: NodeJS.Timeout | null;
 - [ ] `child.props` access casted where needed
 - [ ] `cloneElement` calls have explicit type casts
 - [ ] `Image src` type guarded
-- [ ] `@loadable/component` replaced with `React.lazy` + `Suspense` (if applicable)
+- [ ] `@loadable/component` replaced with `React.lazy` + `Suspense` (if package is in dependencies)
 - [ ] Hydration issues fixed (side effects moved to useEffect)
 - [ ] `useReducer` explicit generics removed
 - [ ] Boolean coercion fixed in className
 - [ ] Unused `import React` removed
 - [ ] TDS type gaps documented with `@ts-expect-error`
-- [ ] `NodeJS.Timer` replaced with `NodeJS.Timeout`
+- [ ] `NodeJS.Timer` replaced with `NodeJS.Timeout` (if used in codebase)
 - [ ] `tsc --noEmit` passes

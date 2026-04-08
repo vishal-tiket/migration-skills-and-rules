@@ -25,7 +25,7 @@ Update these in `dependencies`:
   "react-dom": "^19.2.4",
   "next": "^16.2.2",
   "@next/bundle-analyzer": "^16.2.2",  // if present
-  "webpack": "^5.90.3"                  // add if not present; required for --webpack flag
+  "webpack": "^5.90.3"                  // add only if project will use --webpack flag in build scripts (see migrate-next-config)
 }
 ```
 
@@ -76,7 +76,7 @@ Update in `devDependencies`:
 ```jsonc
 {
   "@testing-library/react": "^16.3.2",
-  "@testing-library/dom": "^10.4.0"    // add if not present; required by RTL 16
+  "@testing-library/dom": "^10.4.0"    // add only if @testing-library/react is already in the project
 }
 ```
 
@@ -101,7 +101,7 @@ Run `pnpm install` to update the lockfile. Fix any peer dependency warnings.
 - [ ] `react` and `react-dom` upgraded to ^19.2.4
 - [ ] `next` upgraded to ^16.2.2
 - [ ] `@next/bundle-analyzer` upgraded to ^16.2.2 (if present)
-- [ ] `webpack ^5.90.3` added as explicit dependency
+- [ ] `webpack ^5.90.3` added as explicit dependency (if using --webpack)
 - [ ] Type definitions upgraded (`@types/react`, `@types/react-dom`, `@types/node`)
 - [ ] `use-sync-external-store` added (if using Zustand)
 - [ ] `react-query` removed (if present)

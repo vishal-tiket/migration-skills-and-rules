@@ -12,6 +12,16 @@ When the user asks to migrate or upgrade to React 19 / Next 16 / Node 24, execut
 3. Execute every step in the skill's checklist
 4. Move to the next phase
 
+## Adaptive Rule
+
+BEFORE executing any skill step that adds a package, creates a file, or modifies a config:
+- Check if the package/file/config already exists in this project
+- Only upgrade packages that are already in package.json
+- Only create files that are required for the migration to function (e.g., `react-jsx.d.ts`, `eslint.config.cjs` replacing the deleted `.eslintrc`)
+- Never create optional files (`.nvmrc`, mocks, patches) if the project never had them or does not need them
+- Never add a package that the project does not already depend on unless it is strictly required for the migration (e.g., `webpack` for the `--webpack` flag)
+- Skip entire steps/sections that do not apply to this project
+
 ## Execution Order
 
 ### Phase 1: Dependencies
@@ -52,6 +62,7 @@ Read and apply `.cursor/skills/migrate-eslint-flat-config/SKILL.md`
 Read and apply `.cursor/skills/migrate-jest-testing/SKILL.md`
 - Upgrades Jest, jsdom, Testing Library for React 19
 - Also read `patches-and-mocks.md` in the same directory for patch and mock file contents
+- Patches and mocks are conditional -- only create if the project needs them (see SKILL.md guards)
 
 ### Phase 6: Code Fixes
 

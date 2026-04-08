@@ -12,7 +12,7 @@ Replace legacy ESLint config (`.eslintrc.json` / `.eslintrc`) or oxlint/oxfmt wi
 
 ## Step 1: Remove old config and packages
 
-Delete these files (whichever exist):
+Delete only those files that exist in the project. Skip any that are not present:
 
 - `.eslintrc.json`
 - `.eslintrc`
@@ -20,7 +20,7 @@ Delete these files (whichever exist):
 - `.oxlintrc.json`
 - `.oxfmtrc.json`
 
-Remove these packages from `devDependencies`:
+Remove only packages that are currently in `devDependencies`:
 
 ```
 eslint-config-next
@@ -73,7 +73,9 @@ The template includes:
 - React Compiler rules turned off
 - Jest globals for test files
 
-## Step 4: Create Prettier config
+## Step 4: Create Prettier config (if applicable)
+
+If the project already has a Prettier config (`.prettierrc`, `prettier.config.js`, etc.), update it instead of creating a new one. If the project does not use Prettier and is not adding it in this migration, skip this step entirely. If Prettier was added in Step 2, create these files:
 
 Create `.prettierrc`:
 
@@ -100,7 +102,9 @@ coverage
 pnpm-lock.yaml
 ```
 
-## Step 5: Update lint-staged
+## Step 5: Update lint-staged (if file exists)
+
+If `.lintstagedrc.js` (or equivalent lint-staged config) exists, update it. Otherwise skip this step.
 
 Update `.lintstagedrc.js`:
 
@@ -127,7 +131,9 @@ module.exports = {
 };
 ```
 
-## Step 6: Update sonar-project.properties
+## Step 6: Update sonar-project.properties (if file exists)
+
+If `sonar-project.properties` exists, update it. Otherwise skip this step:
 
 ```properties
 sonar.eslint.eslintconfigpath=eslint.config.cjs
@@ -170,9 +176,9 @@ Also update inline disable comments if plugin IDs changed:
 - [ ] Old packages removed (`eslint-config-next`, `oxlint`, `oxfmt`)
 - [ ] New ESLint 10 packages added
 - [ ] `eslint.config.cjs` created
-- [ ] `.prettierrc` and `.prettierignore` created
-- [ ] `.lintstagedrc.js` updated
-- [ ] `sonar-project.properties` updated
+- [ ] `.prettierrc` and `.prettierignore` created or updated (if applicable)
+- [ ] `.lintstagedrc.js` updated (if file exists)
+- [ ] `sonar-project.properties` updated (if file exists)
 - [ ] ESLint local rules updated for ESLint 10 API (if applicable)
 - [ ] `lint:js` and `format` scripts updated
 - [ ] `pnpm run lint:js` passes (or shows only warnings)

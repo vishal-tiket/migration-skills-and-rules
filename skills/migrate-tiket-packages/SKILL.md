@@ -23,7 +23,7 @@ Read `package.json` and categorize all `@tiket/*` dependencies into three groups
 
 ## Step 2: Update versions
 
-Replace every `@tiket/*` dependency version with its corresponding alpha:
+Only update packages that already exist in `package.json`. Do NOT add any `@tiket/*` package that the project does not currently depend on. Replace every existing `@tiket/*` dependency version with its corresponding alpha:
 
 ```jsonc
 // @tiket/next group
@@ -70,7 +70,7 @@ import { createLogger } from '@tiket/next/logger';
 
 ## Step 5: Update transpilePackages
 
-In `next.config.ts`, ensure `transpilePackages` includes all Tiket packages that need compilation:
+In `next.config.ts`, ensure `transpilePackages` includes all `@tiket/*` packages that are already in your dependencies. Do not add packages here that are not in `package.json`:
 
 ```typescript
 transpilePackages: [
@@ -79,7 +79,9 @@ transpilePackages: [
   '@tiket/react-common-remote',
   '@tiket/react-common-utilities',
   '@tiket/react-common-error-handler',
-  '@tiket/react-common-ab-test',  // add if not present
+  '@tiket/react-common-ab-test',
+  // Only include packages that are already in your dependencies.
+  // Do not add packages here that are not in package.json.
 ],
 ```
 
