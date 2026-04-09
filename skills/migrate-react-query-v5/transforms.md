@@ -98,6 +98,38 @@ useEffect(() => {
 }, [query.error]);
 ```
 
+### Pattern: onSettled replacement
+
+`onSettled` fires on both success and error. Replace with a `useEffect` that watches `data`:
+
+```typescript
+// Before
+const { data } = useQuery(key, fn, {
+  onSettled: (data) => {
+    setShowContent(Boolean(data?.length));
+  },
+});
+
+// After
+const { data } = useQuery({ queryKey: key, queryFn: fn });
+
+useEffect(() => {
+  setShowContent(Boolean(data?.length));
+}, [data]);
+```
+
+If you need to react to both data and error (the full onSettled semantics), watch both:
+
+```typescript
+const { data, error, isFetched } = useQuery({ queryKey: key, queryFn: fn });
+
+useEffect(() => {
+  if (isFetched) {
+    handleSettled(data, error);
+  }
+}, [data, error, isFetched]);
+```
+
 ### Pattern: Wrapper hook with ref-based callbacks (useFetchQuery style)
 
 For projects with a shared query wrapper, the recommended pattern:
@@ -223,4 +255,52 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { cacheTime: 0 
 // After
 import { QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient({ defaultOptions: { queries: { gcTime: 0 } } });
+```
+
+## 11. Error type casting
+
+v5 uses `Error` as the default error type. Direct casts to custom error shapes now fail:
+
+```typescript
+// Before (v3: error was `unknown`)
+const message = (error as Record<string, unknown>)?.message;
+const errData = error as ErrorResponse<MyErrorCode>;
+
+// After (v5: error is `Error`, needs intermediate cast)
+const message = (error as unknown as Record<string, unknown>)?.message;
+const errData = error as unknown as ErrorResponse<MyErrorCode>;
+```
+
+Search pattern:
+```
+rg "error as [A-Z]" --type ts --type tsx
+rg "as ErrorResponse" --type ts --type tsx
+```
+
+## 12. UseQueryOptions type assertion
+
+v5 changed `UseQueryOptions` generics. Remove `as UseQueryOptions<...>` casts or update them:
+
+```typescript
+// Before (v3)
+return useQuery({
+  ...queryOptions,
+  queryKey,
+  queryFn,
+} as UseQueryOptions<APIResponse<TData>, Error, APIResponse<TData>>);
+
+// After (v5 -- prefer removing the cast entirely)
+return useQuery({
+  ...queryOptions,
+  queryKey,
+  queryFn,
+});
+
+// Or if you must keep the cast, use v5's 4-param form:
+// UseQueryOptions<TQueryFnData, TError, TData, TQueryKey>
+```
+
+Search pattern:
+```
+rg "as UseQueryOptions" --type ts --type tsx
 ```

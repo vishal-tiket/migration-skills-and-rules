@@ -218,6 +218,50 @@ let interval: NodeJS.Timer;
 let interval: NodeJS.Timeout | null;
 ```
 
+## 13. Callback ref must not return a value
+
+React 19 requires callback refs to return `void` or a cleanup function. Parenthesized assignment expressions implicitly return the assigned value, which breaks the type:
+
+```typescript
+// Before (implicit return of `el`)
+ref={(el) => (refsArray.current[idx] = el)}
+
+// After (block body, no return)
+ref={(el) => { refsArray.current[idx] = el; }}
+```
+
+**Search pattern:**
+
+```
+rg "ref=\{.*=>\s*\(" --type tsx
+```
+
+Look for arrow functions with parenthesized bodies (not curly braces). Any that perform assignments and implicitly return a value need to be converted to block bodies.
+
+## 14. `React.Key` in template literals
+
+React 19 types expand `React.Key` to include types that cannot be implicitly converted in template literals. Wrapping with `String()` is required:
+
+```typescript
+// Before (fails: React.Key may include symbol/bigint)
+alt={`prefix-${idx}`}   // idx: React.Key
+return `${prefix}-${key}`; // key: React.Key
+
+// After
+alt={`prefix-${String(idx)}`}
+return `${prefix}-${String(key)}`;
+```
+
+**Search pattern:**
+
+```
+rg "React\.Key" --type ts --type tsx
+```
+
+Check each match: if the `React.Key` typed variable is used inside a template literal, wrap it with `String(...)`.
+
+**Alternative fix**: If `idx` is always a `number` (e.g., an array index), change the type from `React.Key` to `number`.
+
 ## Checklist
 
 - [ ] `RefObject<T>` updated to `RefObject<T | null>` across the codebase
@@ -232,4 +276,6 @@ let interval: NodeJS.Timeout | null;
 - [ ] Unused `import React` removed
 - [ ] TDS type gaps documented with `@ts-expect-error`
 - [ ] `NodeJS.Timer` replaced with `NodeJS.Timeout` (if used in codebase)
+- [ ] Callback refs with implicit returns converted to block bodies
+- [ ] `React.Key` variables in template literals wrapped with `String()`
 - [ ] `tsc --noEmit` passes

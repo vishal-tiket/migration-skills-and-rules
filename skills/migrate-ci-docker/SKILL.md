@@ -91,7 +91,7 @@ Pin pnpm version:
 - name: Setup pnpm
   uses: pnpm/action-setup@v5
   with:
-    version: 9  # or 10 depending on project
+    version: 10
 ```
 
 ## Step 4: Workflow-specific changes
@@ -153,7 +153,7 @@ Pin pnpm version:
 - name: Setup pnpm
   uses: pnpm/action-setup@v5
   with:
-    version: 9  # was "latest"
+    version: 10
 ```
 
 ## Step 5: Update Jenkinsfile.dev (if present)
@@ -173,7 +173,7 @@ Update pnpm setup:
 sh 'corepack prepare pnpm@latest'
 
 // After
-sh 'corepack prepare pnpm@10'  // or pnpm@9 depending on project
+sh 'corepack prepare pnpm@10'
 ```
 
 ## Step 6: Update Sonar config (if file exists)

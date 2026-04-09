@@ -36,10 +36,14 @@ import webpack from 'webpack';
 import type { NextConfig } from 'next';
 import pkg from './package.json';
 
-// Keep require() for packages that only expose CJS
+// Keep require() for packages that only expose CJS or have no type declarations.
+// Known untyped/CJS-only packages: next-build-id, @tiket/next/*, @tiket/passport-assets/*
+const nextBuildId = require('next-build-id');
 const SubresourceIntegrity = require('@tiket/next/webpack-subresource-integrity');
 const { getAssetPrefix, getRewrites } = require('@tiket/next/configs/config.cjs');
 ```
+
+**Important:** After converting imports, verify each package has TypeScript types (bundled `index.d.ts` or a matching `@types/*` package). If a package has no types, keep it as `require()` to avoid "Could not find a declaration file" errors in the `.ts` config file.
 
 ## Step 3: Update config function signature
 
@@ -95,20 +99,7 @@ experimental: {
 },
 ```
 
-## Step 6: Add API rewrite for module federation prefix (if applicable)
-
-Only add this rewrite if the app uses module federation or is served under a path prefix. Check for `ModuleFederationPlugin`, `@module-federation`, or path-prefix routing in the existing config before adding:
-
-```typescript
-async rewrites() {
-  return [
-    { source: '/:segment/api/:path*', destination: '/api/:path*' },
-    // ... existing rewrites
-  ];
-},
-```
-
-## Step 7: Add allowedDevOrigins (if needed)
+## Step 6: Add allowedDevOrigins (if needed)
 
 For Next 16 dev server CORS when using custom local domains:
 
@@ -116,7 +107,7 @@ For Next 16 dev server CORS when using custom local domains:
 allowedDevOrigins: ['local.tiket.com'],
 ```
 
-## Step 8: Fix rewrite path syntax
+## Step 7: Fix rewrite path syntax
 
 Next 16 uses a stricter `path-to-regexp`. Update any bare repeat params:
 
@@ -130,7 +121,7 @@ Next 16 uses a stricter `path-to-regexp`. Update any bare repeat params:
 
 Apply this to all rewrites/redirects using `:param*`.
 
-## Step 9: Update package.json scripts
+## Step 8: Update package.json scripts
 
 ```jsonc
 {
@@ -145,7 +136,7 @@ The `--webpack` flag is required because Next 16 defaults to Turbopack, which do
 
 The `lint:js` script changes from `next lint` (or `oxlint`) to `eslint .` for the new flat config.
 
-## Step 10: Update tsconfig include
+## Step 9: Update tsconfig include
 
 Only add `next.config.ts` to `tsconfig.json` `include` if the file was renamed in Step 1 and is not already covered by `**/*.ts`:
 
@@ -163,11 +154,11 @@ Only add `next.config.ts` to `tsconfig.json` `include` if the file was renamed i
 
 - [ ] `next.config.js` renamed to `next.config.ts` (or existing .ts/.mjs adapted)
 - [ ] `require()` converted to ESM imports with types
+- [ ] Untyped/CJS-only packages (e.g. `next-build-id`) kept as `require()`
 - [ ] Config function signature updated (no `defaultConfig`)
 - [ ] `images.domains` replaced with `images.remotePatterns`
 - [ ] `experimental.instrumentationHook` removed
 - [ ] `experimental.cssChunking: 'strict'` added
-- [ ] API rewrite added for module federation prefix (if project uses module federation)
 - [ ] `allowedDevOrigins` added (if using custom local domains)
 - [ ] Rewrite syntax updated (`:path*` to `:path(.*)`)
 - [ ] `--webpack` flag added to build/dev/start scripts

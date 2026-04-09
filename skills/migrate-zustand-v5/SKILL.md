@@ -96,6 +96,16 @@ export function useMyStore<T>(selector: (state: StoreType) => T, equalityFn?: (a
 }
 ```
 
+> **WARNING**: `createStore` in v5 requires the curried form with empty `()()`. A common mistake:
+> ```typescript
+> // WRONG -- missing curried ()
+> const store = createStore<StoreType>((set) => ({ ... }));
+>
+> // CORRECT
+> const store = createStore<StoreType>()((set) => ({ ... }));
+> ```
+> Search for this mistake: `rg "createStore<.*>[^(]\(" --type ts --type tsx`
+
 ## Step 5: Migrate simple stores without middleware
 
 ```typescript
@@ -119,6 +129,42 @@ export const useSimpleStore = createWithEqualityFn<SimpleType>()(
 );
 ```
 
+## Step 6: Fix Immer middleware set parameter types (if applicable)
+
+Only apply if the project uses `zustand/middleware/immer`. In Zustand 5, if store helper functions accept the `set` parameter directly and pass it around (e.g., to slice creators or helper functions), the type of `set` changes and may not match the old type annotations.
+
+```typescript
+// Before (v4): set type was inferred as the store's SetState
+type ImmerSetParam = (fn: (state: Draft<MyStore>) => void) => void;
+const helper = (set: ImmerSetParam) => { ... };
+
+// After (v5): the set parameter type from immer middleware changed.
+// Prefer letting TypeScript infer the type rather than annotating manually.
+// If you must annotate, use the store's actual set type:
+const helper = (set: Parameters<Parameters<typeof createWithEqualityFn<MyStore>>[0]>[0]) => { ... };
+
+// Or more practically, inline the helper into the store creator:
+export const useMyStore = createWithEqualityFn<MyStore>()(
+  devtools(
+    immer((set, get) => ({
+      // define actions here directly instead of splitting into helper functions
+      myAction: () => set((state) => { state.value = 1; }),
+    })),
+  ),
+  shallow
+);
+```
+
+**Search pattern:**
+
+```
+rg "ImmerSetParam|immer.*set.*:" --type ts --type tsx
+```
+
+If helper functions take `set` as a parameter with a custom type annotation, either:
+1. Remove the type annotation and let it be inferred
+2. Or inline the helper into the store creator
+
 ## Checklist
 
 - [ ] `zustand` upgraded to ^5.0.10
@@ -127,4 +173,6 @@ export const useSimpleStore = createWithEqualityFn<SimpleType>()(
 - [ ] All `useStore` calls changed to `useStoreWithEqualityFn` from `zustand/traditional`
 - [ ] `shallow` imported from `zustand/shallow` and passed as equality function
 - [ ] No remaining imports from `'zustand'` top-level `create` (except `createStore` which stays)
+- [ ] `createStore` uses curried form `createStore<T>()((set) => ...)`
+- [ ] Immer middleware `set` parameter types updated or inferred (if applicable)
 - [ ] App tested: no unexpected re-render loops
